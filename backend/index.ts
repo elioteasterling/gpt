@@ -9,12 +9,12 @@ const app = express()
 app.use(body.json())
 app.use(cors())
 
-app.get('/', async (req, res) => {
+app.post('/', async (req, res) => {
     try {
         const q = req.body.question || req.query.question
         if (q) {
-            const openAi = new OpenAi(q)
-            var answer = await openAi.ask()
+            const openAi = new OpenAi()
+            var answer = await openAi.ask(q)
             return res.status(200).json(answer)
         }
     } catch (e) {

@@ -1,37 +1,42 @@
 import { Configuration, CreateAnswerRequest, OpenAIApi, CreateAnswerResponse, CreateCompletionResponseChoicesInner, CreateCompletionResponse } from 'openai'
 import { Asker } from '../contracts/Asker'
 
-export class OpenAi implements Asker {
-    config:   Configuration
-    question: CreateAnswerRequest
-
-    constructor(question: CreateAnswerRequest = questionType, config: Configuration = conf) {
-        this.config   = config
-        this.question = question
-    }
-
-    async ask(q?: CreateAnswerRequest): Promise<CreateCompletionResponse> { return await askOpenAi(this.config, q || this.question) }
+const init = {
+    ['configuration']:Configuration,
+    basePath: '',
+    axios: undefined
 }
 
-async function askOpenAi(c: Configuration = conf, q: CreateAnswerRequest = questionType): Promise<CreateCompletionResponse> {
-    const  oai = new OpenAIApi(c)
-    const  res = await oai.createCompletion(q)
+export class OpenAi implements Asker {
+
+    config: Configuration
+    constructor(config: Configuration = openAiCredentials) { this.config = config }
+
+    async ask(question: string, examples?: string[], configOverride?: Configuration): Promise<CreateCompletionResponse> { return await askOpenAi(question, examples, configOverride) }
+}
+
+async function askOpenAi(question: string, examples?: string[], config?: Configuration): Promise<CreateCompletionResponse> {
+    if (!config) config = openAiCredentials
+    const  oai = new OpenAIApi(config, init.basePath, init.axios)
+    const  res = await oai.createCompletion(completeQuestion(question, examples))
     return res.data
 }
 
-const conf = new Configuration({
+const openAiCredentials = new Configuration({
     organization: process.env.OPEN_AI_ID,
     apiKey:       process.env.OPEN_AI_API_KEY
 })
 
-const questionType = {
-    model: 'text-davinci-003',
-    prompt: '',
-    max_tokens: 16,
-    temperature: 0,     // [0, 1] ≡ [not creative or risky, converse of the former]
-    question: '',
-    examples: [],
-    examples_context: ''
+function completeQuestion(q: string, examples: string[] = []) {
+    const questionFormat: CreateAnswerRequest = {
+        model: 'text-davinci-003',
+        max_tokens: 128,
+        temperature: 0,     // [0, 1] ≡ [not creative or risky, converse of the former]
+        question: `${q}`,
+        examples,
+        examples_context: ''
+    }
+    return questionFormat
 }
 
 export interface Choice    extends CreateCompletionResponseChoicesInner { text: '\n\nThis is a possible answer', index: 0, logprobs: null, finish_reason: '' }

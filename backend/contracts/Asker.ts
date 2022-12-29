@@ -1,3 +1,3 @@
 export interface Asker {
-    ask: () => Promise<any>
+    ask: (question: string, examples: string[], configOverride?: any) => Promise<any>
 }
