@@ -4,7 +4,12 @@
 
 ### - GPT Introducton
 
+#### Find the Documentation at: [openai.com](https://openai.com/api/)
+
 - querying the gpt api to get an appropriate response
+  - gpt3    - natural language tasks
+  - codex   - generate code
+  - dall-e  - create and edit original images
 
 - refine via iteration
 
@@ -38,5 +43,5 @@
 > ```
 >
 > ```sh
->     $: ![Words describing the link](example.com/.../)
+>     $: [Words describing the link](example.com/.../)
 > ```
