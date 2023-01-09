@@ -7,10 +7,11 @@ export function Welcome() {
   return (
     <>
       <Title className={classes.title} align="center" mt={100}>
-        Welcome to{' '}
+        Welcome to a Simple, Sexy{' '}
         <Text inherit variant="gradient" component="span">
-          Mantine
+          <a href="https://nextjs.org/docs">Next</a>-<a href="https://www.prisma.io/docs">Prisma</a>-<a href="https://mantine.dev/">Mantine</a>
         </Text>
+        {' '}Stack of Awesomeness
       </Title>
       <Text color="dimmed" align="center" size="lg" sx={{ maxWidth: 580 }} mx="auto" mt="xl">
         This starter Next.js project includes a minimal setup for server side rendering, if you want
