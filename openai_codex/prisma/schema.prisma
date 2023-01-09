@@ -1,0 +1,93 @@
+datasource db {
+  url      = env("DATABASE_URL")
+  provider = "postgres"
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ------------------------------ Domain Specific ------------------------------
+
+model Event {
+  id         String    @id @default(uuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  happens_at DateTime?
+  email      String    @unique
+  name       String?
+
+  attendees String[] @unique // User.id[]
+
+  host    User   @relation(fields: [host_id], references: [id])
+  host_id String
+}
+
+model Meeting {
+  id         String    @id @default(uuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  begins_at  DateTime?
+  email      String    @unique
+  name       String?
+  host       String?
+  attendees  User[]
+}
+
+
+// ------------------------------ Users ------------------------------
+
+model User {
+  id                    String               @id @default(uuid())
+  create_at             DateTime             @default(now())
+  email                 String               @unique
+  name                  String?
+  event_attendance      Event[]
+  meeting_attendance    Meeting[]
+  role                  Role                 @default(User)
+  get_back_to           ContactRequestQueue? @relation(fields: [contactRequestQueueId], references: [id])
+  contactRequestQueueId String
+}
+
+model ContactRequestQueue {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  form_json  String   @unique
+  User       User[]
+}
+
+enum Role {
+  Admin
+  ExecutiveDirector
+  Supervisor
+  PeerSupporter
+  MeetingFacilitator
+  User
+}
+
+// ------------------------------ i18n ------------------------------
+
+model Token {
+  id            String      @id @default(uuid())
+  place_holder  String      @unique
+  transcription String      @unique
+  translation   Translation @relation(fields: [translationId], references: [id])
+  translationId String
+}
+
+model Translation {
+  id           String   @id @default(uuid())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  page_name    String   @default("/")
+  country_code String   @default("en-US")
+  translations Token[]
+}
+
+model Language {
+  id           String   @id @default(uuid())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+  country_code String   @unique @default("en-US")
+  timezone     String
+}
